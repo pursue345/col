@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.colseckill.mapper.TSeckillGoodsMapper">
+
+    <!-- 开启二级缓存 -->
+    <!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.colseckill.entity.TSeckillGoods">
+        <id column="id" property="id" />
+        <result column="goods_id" property="goodsId" />
+        <result column="seckill_price" property="seckillPrice" />
+        <result column="stock_count" property="stockCount" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, goods_id, seckill_price, stock_count, start_date, end_date
+    </sql>
+
+    <select id="queryByGoodId" resultType="com.colseckill.entity.TSeckillGoods">
+        select * from t_seckill_goods where goods_id = #{goodId}
+    </select>
+
+    <update id="updateByGoodId" >
+        update t_seckill_goods set stock_count = stock_count-1 where goods_id = #{goodId} and stock_count > 0
+    </update>
+
+</mapper>

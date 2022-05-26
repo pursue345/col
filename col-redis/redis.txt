@@ -1,0 +1,108 @@
+linux下redis操作命令：
+key *  查看当前库所有key
+exists key 判断某个key是否存在
+del key 删除指定key的数据，同步删除
+unlik key 删除指定key数据，异步删除
+type key 查看key的类型
+expire key 10 为key设置过期时间
+ttl key 查看key剩余过期时间，-1 永不过期，-2已过期
+select 0-15 命令切换数据库
+dbsize 查看当前数据库的key的数量
+flushdb 清空当前数据库
+flushall 清空数据库
+
+
+redis中String操作： String数据结构为简单动态字符串，类似于ArrayList，长度小于1M，加倍扩容，长度超过1M，每次扩容1M，字符串最大长度为512M
+set k1 123 设置key为k1,值为123
+get k1 获取k1的值
+append k1 456 在k1值上追加456
+strlen k1 获取k1值的长度
+setnx k3 123 只有k3不存在时，才会设置key的值
+incr k1 数值型，将k1的值+1，不存在，新增值为1
+decr k1 数值型，将k1的值-1，不存在，新增值为-1
+incrby k1 10 将k1的值+10
+decrby k1 10 将k1的值-10
+mset k1 v1 k2 v2 k3 v3 设置多个值
+mget k1 k2 k3 获取多个值
+msetnx k1 v1 k2 v2 k3 v3 设置多个值，所有key不存在时，才会设置成功
+getrange k1 0 3 获取k1 下标0-3的值
+setrange k1 2 abc 设置k1下标2开始，abc
+setex k1 10 abc 设置k1的失效时间为10s
+getset k1 123 用123替换原k1的值
+
+Redis中List操作:数据结构为快速链表，quickList（链表+zipList，也就是多个zipList使用双向指针连接起来），所有元素挨着存储，分配的是一块连续的内存
+lpush/rpush k1 v1 v2 v3 从左/右加入值v1,v2 ,v3
+lpop/rpop k1 从左边/右边取出一个值
+lrange k1 0 3 索引下标从左到右获取元素
+rpoplpush k1 k2 从k1 右边取出一个值，插到k2列表左边
+lindex k1 2 获取左边下标为2的值
+llen k1 获取列表长度
+linsert k1 before v2 v4 在v2前面插入v4
+lrem k1 2 v1 从左边删除2个k1值为v1
+lset k1 2 v3 替换下标为2的值为v3
+
+Redis中set操作：数据结构是String类型的无序集合，底层是一个Value为null的hash表，查找、删除、添加复杂度都是O（1）
+sadd k1 v1 v2 将元素加入k1集合，存在的值忽略
+smembers k1 取出k1集合的值
+sismembers k1 abc 判断k1集合值是否有abc，有1，无0
+scard k1 k1集合个数
+srem k1 a b 删除k1集合中的元素a和b
+spop k1 随机取出k1的元素并删除
+srandmember k1 n 随机取出n个k1集合的元素，不会删除
+sinter k1 k2 集合交集
+sunion k1 k2 集合并集
+sdiff k1 k2 集合差集，k1中的，不包含k2
+
+Redis中hash操作：一个String类型的field和value的映射表，适合存储对象，类似Map<String,Object>
+hset myhash id 1 给myhash集合id属性赋值1
+hget myhash id 获取myhash集合id属性值
+hmset myhash id 1 name lishi age 12  给myhash集合设置多个属性和值
+hexists myhash id 判断myhash集合是否存在属性id
+hkeys myhash 获取myhash的所有属性
+hvals myhash 获取myhash所有的值
+hincrby myhash id 2 给myhash的属性id值+2
+hsetnx myhash age 2 给myhash添加属性age,不存在age加入成功
+
+Redis中Zset操作：无重复有序集合，每个成员关联一个评分，集合成员是惟一的，成员的评分是可重复的，由低到高，类似于hash（Map<String,Object>）+跳跃表
+zadd topn 200 java 300 c++ 400 python  添加一个topn，java评分200 c++评分300 python评分400
+zrange topn 0 -1 取出所有topn的值
+zrange topn 0 -1 withscores 取出所有topn的值和评分
+zrangeby score topn 200 300 取出topn的200-300之间评分的值
+zincrby topn 50 java 将topn值java的socre+50
+zrem topn java 删除topn中的java
+zcount topn 100 200 查找topn评分100-200分的值的个数
+zrank topn java 返回topn中的java的排名
+
+linux中命令行发布订阅
+订阅主题：subscribe channel1
+发布消息到channel1: public channel1 hello 返回订阅channel1的数量
+
+Redis新数据类型：
+bitmap:存储活跃用户量
+HyperLogLog:基数（不重复元素）的计算
+    pfadd program "java" "php" "mysql" 返回成功1，失败0
+    pfcount program 返回program的元素个数
+Geographic:地理位置（经度、纬度、名称）
+    geoadd china 121.47 31.23 shanghai 新增值
+    geopos china shanghai 获取上海经纬度
+
+
+redis事务：multi
+multi 开启事务
+set k1 v1
+set k2 v2
+exec 执行事务
+
+multi 开启事务
+set k1 v1
+set k2 v2
+discard 取消执行
+
+
+redis锁：watch 与 unwatch
+watch k1
+multi
+insrby k1 10
+exec
+
+redis6的ACL新特性，将redist的权限进行细化，具体化，操作更安全

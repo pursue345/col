@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <springProperty scope="context" name="LOG_HOME" source="logback.file.path" defaultValue="C:\All_logs"/>
+    <springProperty scope="context" name="LOG_LEVEL" source="logback.level" defaultValue="info"/>
+    <springProperty scope="context" name="SERVER_NAME" source="spring.application.name" defaultValue="col-elasticsearch"/>
+
+
+    <!--<property name="LOG_HOME" value="D:/application/logs/enett" />-->
+
+    <!--<property name="LOG_HOME" value="/Users/ailk/test/ysl" />-->
+    <property name="SEF_Level" value="INFO" />
+    <!--文件输出的格式设置 -->
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件输出的日志 的格式 -->
+        <encoder>
+            <pattern>
+                ${SERVER_NAME} ${NODE_FLAG} %level %date{yyyy-MM-dd HH:mm:ss.SSS} %logger[%line] %msg%n
+            </pattern>
+        </encoder>
+
+        <!-- 配置日志所生成的目录以及生成文件名的规则 在logs/mylog-2016-10-31.0.log -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${SERVER_NAME}/info/info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 最大64MB 超过最大值，会重新建一个文件-->
+                <maxFileSize>10 MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!--控制台输出的格式设置 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 控制台输出的日志 的格式 -->
+        <encoder>
+            <pattern>
+                ${SERVER_NAME} ${NODE_FLAG} %level %date{yyyy-MM-dd HH:mm:ss.SSS} %logger[%line] %msg%n
+            </pattern>
+        </encoder>
+        <!-- 只是DEBUG级别以上的日志才显示 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+
+    <appender name="DruidLog"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件输出的日志 的格式 -->
+        <encoder>
+            <pattern>
+                ${SERVER_NAME} ${NODE_FLAG} %level %date{yyyy-MM-dd HH:mm:ss.SSS} %logger[%line] %msg%n
+            </pattern>
+        </encoder>
+
+
+        <!-- 配置日志所生成的目录以及生成文件名的规则 在logs/mylog-2016-10-31.0.log -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${SERVER_NAME}/Druid/DruidLog-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 最大64MB 超过最大值，会重新建一个文件-->
+                <maxFileSize>10 MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+
+    <appender name="kafkaAppender" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${SERVER_NAME} ${NODE_FLAG} %level %date{yyyy-MM-dd HH:mm:ss.SSS} %logger[%line] %msg%n</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <topic>boot_demo</topic>
+        <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.NoKeyKeyingStrategy"/>
+        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy"/>
+        　　　　 <!--注意此处应该是spring boot中的kafka配置属性-->
+        <producerConfig>bootstrap.servers=192.168.234.156:9092</producerConfig>
+        　　　　 <producerConfig>retries=1</producerConfig>
+
+        　　　　<producerConfig>batch-size=16384</producerConfig>
+        　　　　<producerConfig>buffer-memory=33554432</producerConfig>
+        　　　　<producerConfig>properties.max.request.size==2097152</producerConfig>
+    </appender>
+
+    <!--   <logger name="com.alibaba.druid" additivity="false"  level="INFO">
+          <appender-ref ref="DruidLog" />
+       </logger>-->
+    <logger name="org.springframework" level="${SEF_Level}" />
+    <logger name="com.baomidou" level="${SEF_Level}" />
+    <logger name="org.apache" level="${SEF_Level}" />
+    <logger name="org.mybatis" level="${SEF_Level}" />
+    <logger name="org.hibernate" level="${SEF_Level}" />
+    <logger name="io.netty" level="${SEF_Level}" />
+    <logger name="ch.qos" level="${SEF_Level}" />
+    <logger name="org.eclipse" level="${SEF_Level}" />
+    <logger name="org.thymeleaf" level="${SEF_Level}" />
+    <logger name="io.lettuce" level="${SEF_Level}" />
+    <logger name="com.xxl" level="${SEF_Level}" />
+    <logger name="com.ctrip" level="${SEF_Level}" />
+    <logger name="com.ulisesbocchio" level="${SEF_Level}" />
+    <logger name="com.netflix" level="${SEF_Level}" />
+
+    <!--myibatis log configure-->
+    <logger name="com.apache.ibatis" level="${SEF_Level}"/>
+    <logger name="java.sql.Connection" level="${SEF_Level}"/>
+    <logger name="java.sql.Statement" level="${SEF_Level}"/>
+    <logger name="java.sql.PreparedStatement" level="${SEF_Level}"/>
+    <logger name="tk.mybatis.mapper" level="${SEF_Level}" />
+    <logger name="com.github.pagehelperr" level="${SEF_Level}" />
+    <logger name="org.apache.kafka" level="${SEF_Level}" />
+    <logger name="c.u.jasyptspringboot" level="${SEF_Level}" />
+    <logger name="com.ulisesbocchio.jasyptspringboot" level="${SEF_Level}" />
+    <logger name="org.springframework.context.annotation" level="${SEF_Level}" />
+    <logger name="org.springframework.beans.factory.annotation" level="${SEF_Level}" />
+    <logger name="org.springframework.context.support" level="${SEF_Level}" />
+    <logger name="com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver" level="${SEF_Level}" />
+
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="kafkaAppender"  />
+    </root>
+
+</configuration>

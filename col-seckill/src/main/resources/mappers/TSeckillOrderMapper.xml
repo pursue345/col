@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.colseckill.mapper.TSeckillOrderMapper">
+
+    <!-- 开启二级缓存 -->
+   <!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.colseckill.entity.TSeckillOrder">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="order_id" property="orderId" />
+        <result column="goods_id" property="goodsId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, order_id, goods_id
+    </sql>
+
+    <insert id="insertSecOrder" keyProperty="id" useGeneratedKeys="true" parameterType="com.colseckill.entity.TSeckillOrder">
+        insert into t_seckill_order values(#{id},#{userId},#{orderId},#{goodsId})
+    </insert>
+
+    <select id="queryByMsg" resultType="com.colseckill.entity.TSeckillOrder">
+        select * from t_seckill_order where goods_id = #{goodsId} and user_id = #{userId}
+    </select>
+
+</mapper>

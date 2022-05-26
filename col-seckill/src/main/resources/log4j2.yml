@@ -1,0 +1,86 @@
+Configuration:
+  properties:
+    property:
+      - name: log.level.console
+        value: info
+      - name: CONTAINER_NAME
+        value: ""
+      - name: log.path
+        value: /colseckill/logs/${env:CONTAINER_NAME}
+      - name: project.name
+        value: col-seckill
+      - name: FILE_LOG_PATTERN
+        value: "%d{yyyy-MM-dd HH:mm:ss,SSS} %5p %c{1}:%L - %m%n}"
+      - name: log.pattern
+        value: ${env:FILE_LOG_PATTERN}
+  Appenders:
+    Console:
+      name: ConsoleStdOut
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: ${FILE_LOG_PATTERN}
+    RollingFile:
+      - name: ROLLING_FILE
+        ignoreExceptions: false
+        fileName: ${log.path}/${project.name}-#console#-default.log
+        filePattern: "${log.path}/$${date:yyyy-MM}/${project.name}-#console#-default-%d{yyyy-MM-dd}-%i.gz"
+        PatternLayout:
+          pattern: "${log.pattern}"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: "1024 MB"
+          TimeBasedTriggeringPolicy:
+            modulate: true
+            interval: 1
+        DefaultRolloverStrategy:
+          max: 1000
+      - name: SQL
+        ignoreExceptions: false
+        fileName: ${log.path}/${project.name}-#sql#-default.log
+        filePattern: "${log.path}/$${date:yyyy-MM}/${project.name}-#sql#-default-%d{yyyy-MM-dd}-%i.gz"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: "1024 MB"
+          TimeBasedTriggeringPolicy:
+            modulate: true
+            interval: 1
+        DefaultRolloverStrategy:
+          max: 1000
+      - name: LOG_CAR_CMD_PROCESS_ES
+        ignoreExceptions: false
+        fileName: ${log.path}/${project.name}-#log_car_cmd_process_es#-default.log
+        filePattern: "${log.path}/$${date:yyyy-MM}/${project.name}-#log_car_cmd_process_es#-default-%d{yyyy-MM-dd}-%i.gz"
+        PatternLayout:
+          pattern: "%msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: "1024 MB"
+          TimeBasedTriggeringPolicy:
+            modulate: true
+            interval: 1
+        DefaultRolloverStrategy:
+          max: 1000
+    Failover:
+      name: Failover
+      primary: RollingFile
+      failovers:
+        AppenderRef:
+          ref: ROLLING_FILE
+  Loggers:
+    Root:
+      level: ${log.level.console}
+      AppenderRef:
+        - ref: ConsoleStdOut
+        - ref: ROLLING_FILE
+    Logger:
+      - name: com.colseckill.mapper
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: ConsoleStdOut
+          - ref: SQL
+      - name: LOG_CAR_CMD_PROCESS_ES
+        level: DEBUG
+        additivity: false
+        AppenderRef:
+          - ref: LOG_CAR_CMD_PROCESS_ES
